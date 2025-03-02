@@ -1,54 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hello World PWA</title>
-  <link rel="manifest" href="/manifest.json">
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('Service Worker registered', reg))
-        .catch(err => console.error('Service Worker not registered', err));
-    }
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      let installButton = document.getElementById('install-btn');
-      installButton.style.display = 'block';
-
-      installButton.addEventListener('click', () => {
-        e.prompt();
-        e.userChoice.then(choiceResult => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted the install prompt');
-          } else {
-            console.log('User dismissed the install prompt');
-          }
-        });
-        installButton.style.display = 'none';
-      });
-    });
-  </script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding-top: 50px;
-    }
-    #install-btn {
-      display: none;
-      background-color: #317EFB;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat</title>
+    <script src="https://js.puter.com/v2/"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        #chatbox { width: 80%; height: 300px; border: 1px solid #ccc; padding: 10px; overflow-y: auto; margin: 20px auto; }
+        #user-input, #send-btn { padding: 10px; margin: 10px; }
+        #user-input { width: 60%; }
+    </style>
 </head>
 <body>
-  <h1>Hello World!</h1>
-  <button id="install-btn">Install App</button>
+    <h1>AI Chat</h1>
+    <div id="chatbox"></div>
+    <input type="text" id="user-input" placeholder="Type your question...">
+    <button id="send-btn">Send</button>
+
+    <script>
+        const chatbox = document.getElementById("chatbox");
+        const userInput = document.getElementById("user-input");
+        const sendBtn = document.getElementById("send-btn");
+
+        function addMessage(text, isUser = false) {
+            const message = document.createElement("p");
+            message.textContent = text;
+            message.style.color = isUser ? "blue" : "black";
+            chatbox.appendChild(message);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        sendBtn.addEventListener("click", () => {
+            let userPrompt = userInput.value.trim();
+            if (!userPrompt) return;
+            addMessage("User: " + userPrompt, true);
+            userInput.value = "";
+            
+            puter.ai.chat(userPrompt).then(response => {
+                addMessage("AI: " + response);
+            });
+        });
+    </script>
 </body>
 </html>
